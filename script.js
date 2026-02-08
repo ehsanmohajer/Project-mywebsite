@@ -14,28 +14,41 @@ const applyLanguage = (lang) => {
   
   // Update all elements with language attributes
   document.querySelectorAll("[data-lang-en]").forEach(el => {
+    const isTextNode = el.children.length === 0;
     if (lang === "en") {
-      el.textContent = el.getAttribute("data-lang-en");
+      if (isTextNode) {
+        el.textContent = el.getAttribute("data-lang-en");
+      } else {
+        el.innerHTML = el.getAttribute("data-lang-en");
+      }
     } else if (lang === "fi" && el.hasAttribute("data-lang-fi")) {
-      el.textContent = el.getAttribute("data-lang-fi");
+      if (isTextNode) {
+        el.textContent = el.getAttribute("data-lang-fi");
+      } else {
+        el.innerHTML = el.getAttribute("data-lang-fi");
+      }
     }
   });
   
   // Update language pills
   document.querySelectorAll(".lang-pill").forEach(pill => {
-    pill.classList.toggle("active", pill.textContent.toLowerCase() === lang);
+    const pillLang = pill.getAttribute("aria-label").toLowerCase().includes("finnish") ? "fi" : "en";
+    pill.classList.toggle("active", pillLang === lang);
   });
 };
-
-// Initialize language
-applyLanguage(currentLang);
 
 // Language switch buttons
 document.querySelectorAll(".lang-pill").forEach(pill => {
   pill.addEventListener("click", () => {
-    const lang = pill.textContent.toLowerCase();
+    const isFinnish = pill.getAttribute("aria-label").toLowerCase().includes("finnish");
+    const lang = isFinnish ? "fi" : "en";
     applyLanguage(lang);
   });
+});
+
+// Initialize language on page load
+document.addEventListener("DOMContentLoaded", () => {
+  applyLanguage(currentLang);
 });
 
 const applyTheme = (mode) => {
